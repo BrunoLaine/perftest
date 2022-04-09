@@ -3,9 +3,11 @@ const GooglePageSpeedColectionService = require('./services/googlePageSpeedApi/d
 const Router = require('./routes/index');
 
 class PerftestApp {
-  constructor() {
-    console.error('running constructor ');
-    this.dataColectionService = new GooglePageSpeedColectionService('https://www.voici.fr', 60000);
+  constructor(url, interval, port) {
+    this.url = url;
+    this.interval = interval;
+    this.port = port;
+    this.dataColectionService = new GooglePageSpeedColectionService(this.url, this.interval);
     this.dataColectionService.run();
   }
 
@@ -13,7 +15,7 @@ class PerftestApp {
     const router = new Router(this.dataColectionService);
     const expressApp = express();
     expressApp.use('/', router.getRoutes());
-    const server = expressApp.listen(3000, () => {
+    const server = expressApp.listen(this.port, () => {
       console.log(`Express is running on port ${server.address().port}`);
     });
   }

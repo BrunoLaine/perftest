@@ -24,6 +24,13 @@ Check that the api key was set properly and that the connexion to the database d
 docker-compose logs perftest-back
 ```
 
+## Running in dev mode
+1. Start the database with `docker-compose up -d mongo` 
+2. Start the backend with `cd perftest-back && npm run watch <url to monitor> <polling interval> <port>` 
+3. Start the frontend with `cd perftest-front && npm start`
+
+Note: the frontend will display the data from the url currently monitored by the backend by default.
+
 ## To do
 - add unit testing 
 - add a proper logger

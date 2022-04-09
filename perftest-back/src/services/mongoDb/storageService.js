@@ -3,34 +3,39 @@ const { MongoClient } = require('mongodb');
 class MongoDbStorageService {
   constructor(dbHost, username, password) {
     this.url = `mongodb://${username}:${password}@${dbHost}:27017/`;
+    this.collections = [];
   }
 
-  async initDatabase() {
-    if (!this.collection) {
+  async getCollection(url) {
+    if (!this.collections[url]) {
       const client = await MongoClient.connect(this.url);
       const db = await client.db('perftestDB');
-      this.collection = await db.collection('metrics');
+      this.collections[url] = await db.collection(url);
     }
+    return this.collections[url];
   }
 
-  async store(data) {
-    await this.initDatabase();
-    return this.collection.insertOne(data);
+  async store(url, data) {
+    const collection = await this.getCollection(url);
+    return collection.insertOne(data);
   }
 
-  async getData(sinceDate, untilDate) {
-    await this.initDatabase();
-    return this.collection.find({
-      timestamp: {
-        $gte: sinceDate.toISOString(),
-        $lte: untilDate.toISOString(),
+  async getData(url, sinceDate, untilDate) {
+    const collection = await this.getCollection(url);
+    return collection.find(
+      {
+        timestamp: {
+          $gte: sinceDate.toISOString(),
+          $lte: untilDate.toISOString(),
+        },
       },
-    }).toArray();
+      { _id: 0 },
+    ).toArray();
   }
 
-  async deleteData() {
-    await this.initDatabase();
-    return this.collection.deleteMany({});
+  async deleteData(url) {
+    const collection = await this.getCollection(url);
+    return collection.deleteMany({});
   }
 }
 

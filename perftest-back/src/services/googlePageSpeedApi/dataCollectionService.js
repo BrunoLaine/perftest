@@ -7,6 +7,7 @@ require('dotenv').config();
 class GoogleApiService {
   constructor(url, interval) {
     const api = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+    this.url = url;
     this.apiKey = process.env.APIKEY;
     this.query = `${api}?url=${url}&key=${this.apiKey}`;
     this.interval = interval;
@@ -56,31 +57,33 @@ class GoogleApiService {
   formatMetrics(metrics) {
     const formatedMetrics = {};
     this.config.metrics.forEach((field) => {
-      formatedMetrics[field.name] = jsonpath.value(metrics, field.jsonPath);
+      formatedMetrics[field.name] = jsonpath.query(metrics, field.jsonPath);
     });
     return formatedMetrics;
   }
 
   async store(metrics) {
-    await this.storageService.store(metrics);
+    await this.storageService.store(this.url, metrics);
   }
 
   getMetricsNames() {
     return this.config.metrics.map((field) => field.name);
   }
 
-  async getMetrics(since, until) {
+  async getMetrics(url, since, until) {
+    const dataUrl = url || this.url;
     const untilDate = until
       ? new Date(until)
       : new Date();
     const sinceDate = since
       ? new Date(since)
       : new Date(untilDate - 60 * 60 * 1000);
-    return this.storageService.getData(sinceDate, untilDate);
+    const metrics = await this.storageService.getData(dataUrl, sinceDate, untilDate);
+    return { metrics, url: dataUrl };
   }
 
   async deleteMetrics() {
-    return this.storageService.deleteData();
+    return this.storageService.deleteData(this.url);
   }
 }
 module.exports = GoogleApiService;

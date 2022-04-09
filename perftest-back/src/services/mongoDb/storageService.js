@@ -20,7 +20,12 @@ class MongoDbStorageService {
 
   async getData(sinceDate, untilDate) {
     await this.initDatabase();
-    return this.collection.find({ timestamp: { $gte: sinceDate, $lte: untilDate } }).toArray();
+    return this.collection.find({
+      timestamp: {
+        $gte: sinceDate.toISOString(),
+        $lte: untilDate.toISOString(),
+      },
+    }).toArray();
   }
 
   async deleteData() {

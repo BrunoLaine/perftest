@@ -69,11 +69,11 @@ class GoogleApiService {
 
   async getMetrics(since, until) {
     const untilDate = until
-      ? new Date(until).toISOString()
-      : new Date(Date.now()).toISOString();
+      ? new Date(until)
+      : new Date();
     const sinceDate = since
-      ? new Date(since).toISOString()
-      : new Date(until).setHours(until.getHours() - 1).toISOString();
+      ? new Date(since)
+      : new Date(untilDate - 60 * 60 * 1000);
     return this.storageService.getData(sinceDate, untilDate);
   }
 

@@ -17,6 +17,7 @@ class Router {
       try {
         res.send(await metricsHandler.getMetrics(since, until));
       } catch (error) {
+        console.error(error);
         res.send(error.message);
       }
     });

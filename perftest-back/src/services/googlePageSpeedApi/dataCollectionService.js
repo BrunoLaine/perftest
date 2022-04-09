@@ -11,7 +11,10 @@ class GoogleApiService {
     this.query = `${api}?url=${url}&key=${this.apiKey}`;
     this.interval = interval;
     this.config = serviceConfig;
-    this.storageService = new MongoDbStorageService();
+    const dbHost = process.env.DB_HOST || 'localhost';
+    const dbUser = process.env.DB_USER || 'root';
+    const dbPassword = process.env.DB_PW || 'example';
+    this.storageService = new MongoDbStorageService(dbHost, dbUser, dbPassword);
   }
 
   async run() {
@@ -42,7 +45,6 @@ class GoogleApiService {
   }
 
   async fetchMetrics() {
-    console.log('🚀 ~ file: dataCollectionService.js ~ line 41 ~ GoogleApiService ~ fetchMetrics ~ fetchMetrics');
     const response = await fetch(this.query);
     if (response.status !== 200) {
       throw new Error(`Google API responded with http status ${response.status}`);

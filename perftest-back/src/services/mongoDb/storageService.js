@@ -1,8 +1,8 @@
 const { MongoClient } = require('mongodb');
 
 class MongoDbStorageService {
-  constructor() {
-    this.url = 'mongodb://root:example@localhost:27017/';
+  constructor(dbHost, username, password) {
+    this.url = `mongodb://${username}:${password}@${dbHost}:27017/`;
   }
 
   async initDatabase() {

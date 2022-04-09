@@ -1,0 +1,20 @@
+{
+    "metrics": [
+        {
+            "name": "timestamp",
+            "jsonPath": "$.analysisUTCTimestamp"
+        },
+        {
+            "name": "ressources",
+            "jsonPath": "$.lighthouseResult.audits['network-requests'].details.items"
+        },
+        {
+            "name": "user-timings",
+            "jsonPath": "$.lighthouseResult.audits['user-timings'].details.items"
+        },
+        {
+            "name": "javascript-running-time",
+            "jsonPath": "$.lighthouseResult.audits['bootup-time'].details.summary.wastedMs"
+        }
+    ]
+}

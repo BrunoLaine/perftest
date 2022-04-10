@@ -1,35 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 
-export default function UserTimingsDiagram({ data: metrics }) {
-  // get the list of ressources
-  const userMarksNames = [];
-  metrics.forEach(({ marks }) => {
-    marks.forEach(({ name }) => {
-      if (!userMarksNames.includes(name)) {
-        userMarksNames.push(name);
-      }
+function getData(backendUrl) {
+  return fetch(`${backendUrl}/metrics/marks`)
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error(error);
+      return error;
     });
-  });
-  if (!userMarksNames.length) {
-    return (
-      <span>No User timing marks found, try specifying a longer timeframe or another website</span>
-    );
-  }
-  // for each datapoint, get the loading time of each ressource
-  const dataHeader = ['timestamp'].concat(userMarksNames);
-  const graphData = [dataHeader];
-  metrics.forEach(({ timestamp, marks }) => {
-    const row = [new Date(timestamp)].concat(userMarksNames.map((name) => {
-      const foundRessource = marks.find((mark) => mark.name === name);
-      if (foundRessource) {
-        return foundRessource.startTime;
-      }
+}
 
-      return 0;
-    }));
-    graphData.push(row);
-  });
+export default function UserTimingsDiagram({ backendUrl }) {
+  const [marksData, setData] = useState([]);
+  useEffect(() => {
+    getData(backendUrl).then((newData) => {
+      setData(newData);
+    });
+  }, []);
+
+  if (!marksData) return (<span>loading...</span>);
+
   const options = {
     title: 'User marks timings',
     curveType: 'function',
@@ -42,7 +32,7 @@ export default function UserTimingsDiagram({ data: metrics }) {
       chartType="LineChart"
       width="100%"
       height="400px"
-      data={graphData}
+      data={marksData}
       options={options}
     />
   );

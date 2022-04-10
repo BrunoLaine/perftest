@@ -1,34 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 
-export default function RessourcesTimeDiagram({ data: metrics = [] }) {
-  // get the list of ressources
-  const ressourcesUrls = [];
-  try {
-    metrics.forEach(({ ressources = [] }) => {
-      ressources.forEach(({ url }) => {
-        if (!ressourcesUrls.includes(url)) {
-          ressourcesUrls.push(url);
-        }
-      });
+function getData(backendUrl) {
+  return fetch(`${backendUrl}/metrics/ressources`)
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error(error);
+      return error;
     });
-  } catch (error) {
-    console.error(error);
-  }
-  // for each datapoint, get the loading time of each ressource
-  const dataHeader = ['timestamp'].concat(ressourcesUrls);
-  const graphData = [dataHeader];
-  metrics.forEach(({ timestamp, ressources }) => {
-    const row = [new Date(timestamp)].concat(ressourcesUrls.map((url) => {
-      const foundRessource = ressources.find((ressource) => ressource.url === url);
-      if (foundRessource) {
-        return foundRessource.endTime - foundRessource.startTime;
-      }
+}
 
-      return 0;
-    }));
-    graphData.push(row);
-  });
+export default function RessourcesTimeDiagram({ backendUrl }) {
+  const [ressourcesData, setData] = useState([]);
+  useEffect(() => {
+    getData(backendUrl).then((newData) => {
+      setData(newData);
+    });
+  }, []);
+
+  if (!ressourcesData) return (<span>loading...</span>);
+
   const options = {
     title: 'Loading time per ressource',
     curveType: 'function',
@@ -41,7 +32,7 @@ export default function RessourcesTimeDiagram({ data: metrics = [] }) {
       chartType="LineChart"
       width="100%"
       height="400px"
-      data={graphData}
+      data={ressourcesData}
       options={options}
     />
   );

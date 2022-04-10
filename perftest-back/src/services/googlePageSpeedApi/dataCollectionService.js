@@ -40,6 +40,7 @@ class GoogleApiService {
     } catch (error) {
       console.error(error);
     } finally {
+      // eslint-disable-next-line no-promise-executor-return
       await new Promise((resolve) => setTimeout(resolve, this.interval));
       this.collectData();
     }
@@ -66,20 +67,56 @@ class GoogleApiService {
     await this.storageService.store(this.url, metrics);
   }
 
-  getMetricsNames() {
+  getMetricsTypes() {
     return this.config.metrics.map((field) => field.name);
   }
 
+  getUrl() {
+    return this.url;
+  }
+
   async getMetrics(url, since, until) {
+    return this.storageService.getData(url || this.url, since, until);
+  }
+
+  async getMarks(url, since, until) {
     const dataUrl = url || this.url;
-    const untilDate = until
-      ? new Date(until)
-      : new Date();
-    const sinceDate = since
-      ? new Date(since)
-      : new Date(untilDate - 60 * 60 * 1000);
-    const metrics = await this.storageService.getData(dataUrl, sinceDate, untilDate);
-    return { metrics, url: dataUrl };
+    const marksNames = await this.storageService.getFieldValues(dataUrl, since, until, 'marks.name');
+
+    const data = [['timestamp'].concat(marksNames)];
+    const marksData = await this.storageService.getData(dataUrl, since, until, 'marks');
+
+    marksData.forEach(({ timestamp, marks }) => {
+      const row = [timestamp[0]].concat(marksNames.map((name) => {
+        const foundRessource = marks.find((mark) => mark.name === name);
+        return foundRessource ? foundRessource.startTime : 0;
+      }));
+      data.push(row);
+    });
+    return data;
+  }
+
+  async getJstimings(url, since, until) {
+    const timingsData = await this.storageService.getData(url || this.url, since, until, 'jsTimings');
+    return [['timestamp', 'JS run time']]
+      .concat(timingsData.map(({ timestamp, jsTimings }) => [timestamp[0], jsTimings[0]]));
+  }
+
+  async getRessources(url, since, until) {
+    const dataUrl = url || this.url;
+    const ressourcesUrls = await this.storageService.getFieldValues(dataUrl, since, until, 'ressources.url');
+
+    const data = [['timestamp'].concat(ressourcesUrls)];
+    const ressourcesData = await this.storageService.getData(dataUrl, since, until, 'ressources');
+
+    ressourcesData.forEach(({ timestamp, ressources }) => {
+      const row = [timestamp[0]].concat(ressourcesUrls.map((ressourceUrl) => {
+        const foundRessource = ressources.find((ressource) => ressource.url === ressourceUrl);
+        return foundRessource ? foundRessource.endTime - foundRessource.startTime : 0;
+      }));
+      data.push(row);
+    });
+    return data;
   }
 
   async deleteMetrics() {

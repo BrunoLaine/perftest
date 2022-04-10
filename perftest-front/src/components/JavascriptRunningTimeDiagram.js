@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 
-export default function JavascriptRunningTimeDiagram({ data: metrics }) {
-  const graphData = [['timestamp', 'Javascript running time']]
-    .concat(metrics.map(({ timestamp, jsTimings }) => [new Date(timestamp), jsTimings]));
+function getData(backendUrl) {
+  return fetch(`${backendUrl}/metrics/jstimings`)
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error(error);
+      return error;
+    });
+}
+
+export default function JavascriptRunningTimeDiagram({ backendUrl }) {
+  const [timingsData, setData] = useState([]);
+  useEffect(() => {
+    getData(backendUrl).then((newData) => {
+      setData(newData);
+    });
+  }, []);
+
+  if (!timingsData) return (<span>loading...</span>);
+
   const options = {
     title: 'Javascript running time',
     curveType: 'function',
@@ -16,7 +32,7 @@ export default function JavascriptRunningTimeDiagram({ data: metrics }) {
       chartType="LineChart"
       width="100%"
       height="400px"
-      data={graphData}
+      data={timingsData}
       options={options}
     />
   );

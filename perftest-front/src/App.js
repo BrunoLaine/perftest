@@ -5,11 +5,9 @@ import JavascriptRunningTimeDiagram from './components/JavascriptRunningTimeDiag
 import RessourcesTimeDiagram from './components/RessourcesTimeDiagram';
 import UserTimingsDiagram from './components/UserTimingsDiagram';
 
-function getData() {
-  const url = 'http://www.localhost:3001/metrics';
-  return fetch(url)
-    .then((response) => response.json())
-    .then((json) => json)
+function getData(backendUrl) {
+  return fetch(`${backendUrl}/url`)
+    .then((response) => response.text())
     .catch((error) => {
       console.error(error);
       return error;
@@ -17,27 +15,28 @@ function getData() {
 }
 
 function App() {
-  const [data, setData] = useState([]);
+  const backendUrl = 'http://www.localhost:3001';
+  const [targetUrl, setData] = useState([]);
 
   useEffect(() => {
-    getData().then((newData) => {
+    getData(backendUrl).then((newData) => {
       setData(newData);
     });
   }, []);
-  if (!data.metrics) return (<span>loading...</span>);
+  if (!targetUrl) return (<span>loading...</span>);
   return (
     <div className="App">
       <h1>
         Performance metrics for
         {' '}
-        {data.url}
+        {targetUrl}
       </h1>
       <h2>Javascript Running time</h2>
-      <JavascriptRunningTimeDiagram data={data.metrics} />
+      <JavascriptRunningTimeDiagram backendUrl={backendUrl} />
       <h2>Ressources timing</h2>
-      <RessourcesTimeDiagram data={data.metrics} />
+      <RessourcesTimeDiagram backendUrl={backendUrl} />
       <h2>User marks timing</h2>
-      <UserTimingsDiagram data={data.metrics} />
+      <UserTimingsDiagram backendUrl={backendUrl} />
     </div>
   );
 }

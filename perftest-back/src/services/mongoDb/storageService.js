@@ -20,17 +20,17 @@ class MongoDbStorageService {
     return collection.insertOne(data);
   }
 
-  async getData(url, sinceDate, untilDate) {
+  async getData(url, sinceDate, untilDate, dataType) {
     const collection = await this.getCollection(url);
-    return collection.find(
-      {
-        timestamp: {
-          $gte: sinceDate.toISOString(),
-          $lte: untilDate.toISOString(),
-        },
-      },
-      { _id: 0 },
-    ).toArray();
+    const fields = dataType ? { timestamp: 1, [dataType]: 1, _id: 0 } : { _id: 0 };
+    const query = { timestamp: { $gte: sinceDate.toISOString(), $lte: untilDate.toISOString() } };
+    return collection.find(query).project(fields).toArray();
+  }
+
+  async getFieldValues(url, sinceDate, untilDate, fieldName) {
+    const collection = await this.getCollection(url);
+    const query = { timestamp: { $gte: sinceDate.toISOString(), $lte: untilDate.toISOString() } };
+    return collection.distinct(fieldName, query);
   }
 
   async deleteData(url) {

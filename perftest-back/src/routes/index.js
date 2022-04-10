@@ -40,7 +40,8 @@ class Router {
     });
 
     this.router.delete('/metrics', async (req, res) => {
-      res.send(await metricsHandler.deleteMetrics());
+      const { query: { url } } = req;
+      res.send(await metricsHandler.deleteMetrics(url));
     });
   }
 

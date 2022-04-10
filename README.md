@@ -24,6 +24,21 @@ Check that the api key was set properly and that the connexion to the database d
 docker-compose logs perftest-back
 ```
 
+## Backend APIs
+- get /url 
+  - returns the url currently monitored 
+- get /metrics
+  - returns the raw metrics for the selected timeframe
+  - query params: since, until, url: can return data from url not currently monitored
+- get /metrics/(metricsType) 
+  - returns the metrics of the selected type formatted for graphing
+  - query params: since, until, url
+- delete /metrics
+  - delete all metrics for selected url
+  - query params: url
+
+Note: the default url is the currently monitored and the default timeframe is one hour.
+
 ## Running in dev mode
 1. Start the database with `docker-compose up -d mongo` 
 2. Start the backend with `cd perftest-back && npm run watch <url to monitor> <polling interval> <port>` 
@@ -34,6 +49,7 @@ Note: the frontend will display the data from the url currently monitored by the
 ## To do
 - add unit testing 
 - add a proper logger
+- add swagger
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

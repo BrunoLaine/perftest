@@ -128,8 +128,8 @@ class GoogleApiService {
     return data;
   }
 
-  async deleteMetrics() {
-    return this.storageService.deleteData(this.url);
+  async deleteMetrics(url) {
+    return this.storageService.deleteData(url || this.url);
   }
 }
 module.exports = GoogleApiService;

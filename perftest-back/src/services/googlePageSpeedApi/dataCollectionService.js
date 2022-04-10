@@ -82,6 +82,9 @@ class GoogleApiService {
   async getMarks(url, since, until) {
     const dataUrl = url || this.url;
     const marksNames = await this.storageService.getFieldValues(dataUrl, since, until, 'marks.name');
+    if (!marksNames.length) {
+      return [];
+    }
 
     const data = [['timestamp'].concat(marksNames)];
     const marksData = await this.storageService.getData(dataUrl, since, until, 'marks');
@@ -98,6 +101,9 @@ class GoogleApiService {
 
   async getJstimings(url, since, until) {
     const timingsData = await this.storageService.getData(url || this.url, since, until, 'jsTimings');
+    if (!timingsData.length) {
+      return [];
+    }
     return [['timestamp', 'JS run time']]
       .concat(timingsData.map(({ timestamp, jsTimings }) => [timestamp[0], jsTimings[0]]));
   }
@@ -105,6 +111,9 @@ class GoogleApiService {
   async getRessources(url, since, until) {
     const dataUrl = url || this.url;
     const ressourcesUrls = await this.storageService.getFieldValues(dataUrl, since, until, 'ressources.url');
+    if (!ressourcesUrls.length) {
+      return [];
+    }
 
     const data = [['timestamp'].concat(ressourcesUrls)];
     const ressourcesData = await this.storageService.getData(dataUrl, since, until, 'ressources');

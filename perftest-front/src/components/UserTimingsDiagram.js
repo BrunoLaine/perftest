@@ -19,6 +19,7 @@ export default function UserTimingsDiagram({ backendUrl }) {
   }, []);
 
   if (!marksData) return (<span>loading...</span>);
+  if (!marksData.length) return (<span>No data for this metric</span>);
 
   const options = {
     title: 'User marks timings',

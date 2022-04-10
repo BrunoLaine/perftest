@@ -19,6 +19,7 @@ export default function JavascriptRunningTimeDiagram({ backendUrl }) {
   }, []);
 
   if (!timingsData) return (<span>loading...</span>);
+  if (!timingsData.length) return (<span>No data for this metric</span>);
 
   const options = {
     title: 'Javascript running time',

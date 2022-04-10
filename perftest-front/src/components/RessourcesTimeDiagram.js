@@ -19,6 +19,7 @@ export default function RessourcesTimeDiagram({ backendUrl }) {
   }, []);
 
   if (!ressourcesData) return (<span>loading...</span>);
+  if (!ressourcesData.length) return (<span>No data for this metric</span>);
 
   const options = {
     title: 'Loading time per ressource',

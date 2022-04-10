@@ -6,14 +6,14 @@
         },
         {
             "name": "ressources",
-            "jsonPath": "$.lighthouseResult.audits['network-requests'].details.items"
+            "jsonPath": "$.lighthouseResult.audits['network-requests'].details.items.*"
         },
         {
-            "name": "user-timings",
-            "jsonPath": "$.lighthouseResult.audits['user-timings'].details.items"
+            "name": "marks",
+            "jsonPath": "$.lighthouseResult.audits['user-timings'].details.items[?(@.timingType=='Mark')]"
         },
         {
-            "name": "javascript-running-time",
+            "name": "jsTimings",
             "jsonPath": "$.lighthouseResult.audits['bootup-time'].details.summary.wastedMs"
         }
     ]

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const GooglePageSpeedColectionService = require('./services/googlePageSpeedApi/dataCollectionService');
+const GooglePageSpeedCollectionService = require('./services/googlePageSpeedApi/dataCollectionService');
 const Router = require('./routes/index');
 
 class PerftestApp {
@@ -8,12 +8,12 @@ class PerftestApp {
     this.url = url;
     this.interval = interval;
     this.port = port;
-    this.dataColectionService = new GooglePageSpeedColectionService(this.url, this.interval);
-    this.dataColectionService.run();
+    this.dataCollectionService = new GooglePageSpeedCollectionService(this.url, this.interval);
+    this.dataCollectionService.run();
   }
 
   run() {
-    const router = new Router(this.dataColectionService);
+    const router = new Router(this.dataCollectionService);
     const expressApp = express();
     expressApp.use(cors({ origin: '*' }));
     expressApp.use('/', router.getRoutes());

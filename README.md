@@ -15,6 +15,8 @@ echo "APIKEY=<your API key>" > .env
 docker-compose up -d
 ```
 
+Note: The website monitored by default is https://www.voici.fr which doesn't have user timing marks. To see this feature please use the steps provided in [Running in dev mode](#running-in-dev-mode) to specify another url (ex: https://reddit.com).
+
 ## Usage
 Wait a few minutes for the data to be collected. Visit the front-end on localhost:3000. 
 

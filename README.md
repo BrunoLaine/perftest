@@ -41,15 +41,25 @@ Note: the default url is the currently monitored and the default timeframe is on
 
 ## Running in dev mode
 1. Start the database with `docker-compose up -d mongo` 
-2. Start the backend with `cd perftest-back && npm run watch <url to monitor> <polling interval> <port>` 
-3. Start the frontend with `cd perftest-front && npm start`
+2. Start the backend with 
+```bash
+cd perftest-back 
+npm install 
+npm run watch <url to monitor> <polling interval> <port>
+``` 
+3. Start the frontend with 
+```bash
+cd perftest-front 
+npm install
+npm start
+```
 
 Note: the frontend will display the data from the url currently monitored by the backend by default.
 
 ## To do
-- add unit testing 
-- add a proper logger
-- add swagger
+- Unit testing 
+- Add a logger
+- Document APIs with swagger
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
